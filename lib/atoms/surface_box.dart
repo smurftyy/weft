@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../tokens/semantic.dart';
-import '../tokens/primitives.dart' show InsetSpec;
 
 /// The single widget every atom paints its resolved [SurfaceStyle] through.
 /// Handles fill/gradient, border, drop shadows, backdrop blur (glass) and — the
