@@ -66,8 +66,9 @@ class Compose {
     return b.tileLabelChip(s);
   }
 
-  static double tileHeight(Set<Profile> profiles) =>
-      _motor(profiles) ? MotorProfile.tileHeight : Prims.tileHeightBase;
+  static double tileHeight(Set<Profile> profiles) => _motor(profiles)
+      ? MotorProfile.tileHeight // 140 (Motor dominates)
+      : (_vision(profiles) ? 132 : Prims.tileHeightBase); // Vision enlarges a step for the bigger type
 
   // ── Section header ──
   /// Backing plate — dropped by the same generalized cascade as the label chip.

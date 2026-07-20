@@ -1,6 +1,24 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 1 (Token scaffold) — **COMPLETE ✅ (2026-07-20)**, awaiting review before Phase 2. Full four-tier system + live harness working; 22/22 tests pass; goldens prove visible paradigm/profile differences.
+**Status:** Phase 2 (Atom layer) — **COMPLETE ✅ (2026-07-20)**, awaiting review before Phase 3. All 8 atoms ported, semantic-tier-only reads; R6 (inset shadows) resolved via `InsetShadowPainter`; 31/31 tests pass; atom-matrix goldens confirm correct render across 3 paradigms × {none, Motor, Vision}.
+
+### Phase 2 checkpoint log — COMPLETE (2026-07-20)
+**Shipped:**
+- Token tiers extended: `SurfaceStyle.insets`, full inset-shadow vocabulary in `primitives.dart`, slider/toggle/chip/card/preview roles across all 3 paradigm bindings, compose geometry + glass-hardening.
+- **R6 resolved** — `lib/atoms/surface_box.dart`: `InsetShadowPainter` (clip-to-rrect + blurred difference-path) handles directional highlights/grooves AND the omnidirectional glass on-state glow. Values stay in Tier 1 as `InsetSpec`; painting in one shared widget. Goldens confirm Skeuo reads dimensional and Glass on-states glow.
+- 8 atoms in `lib/atoms/`: `AtomTile`, `AppSlider`, `AppToggle`, `AppChip`, `SectionHeader`, `WidgetCard`, `AppIcon`, `PreviewCard` — each reads only `context.sem`, no literals.
+- `lib/dev/atom_gallery.dart` — all atoms on one surface; harness now shows it.
+- Tests: `test/atom_gallery_golden_test.dart` (9-cell matrix). Full suite **31/31**.
+
+**Signature rule honored:** `AtomTile/Slider/Chip` resolvers are `(WState)`; `Toggle` uses the on/off second axis mapped onto WState in the semantic tier — the only genuine extra axis so far.
+
+**Discovered tokens (Q2 rule — logged, added at semantic layer, not inline):**
+1. `card.titleColor` for **glass** — source `WidgetCard` title was skeuo-tuned (`#8A7C64`) only; glass needs a light title on its dark translucent ground. Added `Prims.white@.85` in `GlassBindings.cardTitleColor()`.
+2. **Vision tile-height step** — source only grew tile height for Motor; Vision's ×1.35 type needs vertical room, so `Compose.tileHeight` now returns 132 under Vision (140 Motor still dominates). Legitimate a11y behavior; flagged for your review.
+
+**Known simplification (R7):** Material glyphs lack stroke control, so Vision's "icon stroke +50%" is not literally rendered (icon size/contrast carry emphasis instead). Real SVG icons could restore it later; out of MVP scope unless you want it.
+
+**Next:** Phase 3 — assemble the real Control Center (Skeuo first, then Glass/Minimal by swap only; Motor/Vision overlays; stateful toggles; a11y-shortcut deep-link). **Awaiting approval.**
 
 ### Phase 1 checkpoint log — Tier 1 (2026-07-20)
 **Shipped:**
@@ -194,7 +212,8 @@ Each phase ends at a checkpoint; I stop for approval and update this file (what 
 | **R3** | Flutter `BackdropFilter` blur ≠ CSS `backdrop-filter`; perf-heavy, esp. stacked. | Glass fidelity/jank. | Prototype glass tile early (Phase 2). Note: Vision **reduces** blur (a11y fallback = perf fallback, §3.5) — the escape hatch is already in the design. |
 | **R4** | Intersection-override logic sprawls into widgets. | Kills the thesis (§3.3). | One `compose.dart`, one generalized Glass×Vision rule, zero per-widget overrides. Reviewed at Phase 2/3 checkpoints. |
 | **R5** | 26–37h work in a 24–48h window is tight. | Slip. | Strict MVP order (Skeuo-first each surface); paradigm/profile added by swap not re-author; hi-fi fallback. |
-| **R6** | Flutter `BoxShadow` has **no inset support**; Skeuo's dimensional identity (top highlight + inset groove) relies on CSS `inset`. | Skeuo could read flat. | Carry dimensionality via native gradients (done in Tier 1) + `InsetSpec` data type rendered by CustomPainter/gradient overlay in Phase 2. Prototype skeuo tile early. |
+| **R6** | ~~Flutter `BoxShadow` has no inset support; Skeuo's dimensionality relies on CSS `inset`.~~ | ~~Skeuo could read flat.~~ | **RESOLVED (Phase 2):** `InsetShadowPainter` (clip + blurred difference-path) renders directional + omnidirectional insets from Tier-1 `InsetSpec`. Goldens confirm dimensional Skeuo + glass glow. |
+| **R7** | Material glyphs lack stroke control → Vision "icon stroke +50%" not literally rendered. | Minor Vision-icon fidelity gap. | Size/contrast carry emphasis in MVP; swap to SVG icon set later if desired. Low impact. |
 
 ---
 

@@ -72,7 +72,15 @@ class AtomTile extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Icon(_glyph(icon), size: 28, color: ink),
-          Align(alignment: Alignment.centerLeft, child: labelBlock),
+          // Safety net: never overflow a fixed-height tile regardless of font
+          // metrics; scales the label block down only if it can't fit.
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.bottomLeft,
+              child: labelBlock,
+            ),
+          ),
         ],
       ),
     );

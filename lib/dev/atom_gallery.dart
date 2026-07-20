@@ -85,9 +85,14 @@ class AtomGallery extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('9:41', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: ink, height: 1)),
-                    Text('Friday, July 20', style: TextStyle(fontSize: 13, color: cap)),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text('9:41', style: TextStyle(fontSize: 40, fontWeight: FontWeight.w700, color: ink, height: 1)),
+                    ),
+                    Text('Friday, July 20', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, color: cap)),
                   ],
                 ),
               ),
@@ -99,9 +104,14 @@ class AtomGallery extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text('72°', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, color: ink, height: 1)),
-                    Text('Partly Cloudy', style: TextStyle(fontSize: 12.5, color: cap)),
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text('72°', style: TextStyle(fontSize: 36, fontWeight: FontWeight.w700, color: ink, height: 1)),
+                    ),
+                    Text('Partly Cloudy', maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: cap)),
                   ],
                 ),
               ),
