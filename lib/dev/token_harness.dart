@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_config.dart';
 import '../tokens/token_types.dart';
-import 'atom_gallery.dart';
+import '../surfaces/control_center.dart';
 
 /// Phase-1 dev harness: the stub surface above, live paradigm + profile controls
 /// below. Flipping a control recomposes [AppSemantics] and the stub repaints —
@@ -17,7 +17,13 @@ class TokenHarness extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const Expanded(child: AtomGallery()),
+            Expanded(
+              child: ControlCenter(
+                onAccessibilityShortcut: () => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('→ Customization profiles (Phase 4)'), duration: Duration(seconds: 1)),
+                ),
+              ),
+            ),
             AnimatedBuilder(
               animation: ctrl,
               builder: (context, _) => _Controls(ctrl: ctrl),

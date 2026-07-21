@@ -1,6 +1,17 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 2 (Atom layer) — **COMPLETE ✅ (2026-07-20)**, awaiting review before Phase 3. All 8 atoms ported, semantic-tier-only reads; R6 (inset shadows) resolved via `InsetShadowPainter`; 31/31 tests pass; atom-matrix goldens confirm correct render across 3 paradigms × {none, Motor, Vision}.
+**Status:** Phase 3 (Control Center) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 4. Assembled Control Center works across all 3 paradigms (swap-only, zero widget changes) + Motor/Vision overlays; stateful toggles; 38/38 tests pass.
+
+### Phase 3 checkpoint log — COMPLETE (2026-07-21)
+**Shipped:** `lib/surfaces/control_center.dart` — status bar, page header, Connectivity 2×2 (Wi-Fi/Bluetooth/Airplane/Cellular), Brightness+Volume sliders with icon endcaps, Quick-Actions 2×2 (Voice/Flashlight/DND/Rotation), "More" card (Location/Battery Saver/Focus Mode toggles + Accessibility-Shortcut deep-link row). Built from Phase-2 atoms; every visual from the semantic tier.
+- **Stateful & session-persistent:** tile + toggle on/off live in `AppConfig.toggles` (in-memory, MVP). Tapping a tile flips selected↔enabled; interaction lives in the surface, atoms stay presentational.
+- **Deep-link:** Accessibility-Shortcut row fires `onAccessibilityShortcut` (placeholder SnackBar in harness; wired to Customization in Phase 6, target built Phase 4).
+- **Swap-only proven:** Glass + Minimal come purely from paradigm swap — no inline overrides. `test/control_center_golden_test.dart` = 7 cases (3 paradigms + Motor/Vision on Skeuo & Glass). Full suite **38/38**, analyze clean.
+- Added `TileIcon.voice` (mic) for Voice Control.
+
+**Device-blur note (Q6):** on-device Glass-blur validation still pending — the phone isn't attached to *this* build machine, so verification remains golden-based (real `BackdropFilter`, but goldens can flatter blur). Will run `flutter run` for a live blur check whenever the phone is plugged into this box.
+
+**Next:** Phase 4 — Customization surface (paradigm picker specimens, 4 profile toggles incl. Cognitive/One-Handed preview-only, live `PreviewCard` with 3-axis composition, Apply CTA). **Awaiting approval.**
 
 ### Phase 2 checkpoint log — COMPLETE (2026-07-20)
 **Shipped:**

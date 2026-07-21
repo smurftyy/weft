@@ -5,7 +5,7 @@ import 'surface_box.dart';
 /// Connectivity/quick-action glyphs the tile can show. Material glyphs stand in
 /// for the source SVGs (recognizable); stroke-weight emphasis under Vision is a
 /// known simplification — Material icons lack stroke control (see PLAN R7).
-enum TileIcon { wifi, bluetooth, cellular, airplane, flashlight, dnd, rotation, battery }
+enum TileIcon { wifi, bluetooth, cellular, airplane, flashlight, dnd, rotation, battery, voice }
 
 IconData _glyph(TileIcon i) => switch (i) {
       TileIcon.wifi => Icons.wifi,
@@ -16,6 +16,7 @@ IconData _glyph(TileIcon i) => switch (i) {
       TileIcon.dnd => Icons.do_not_disturb_on,
       TileIcon.rotation => Icons.screen_rotation,
       TileIcon.battery => Icons.battery_saver,
+      TileIcon.voice => Icons.mic,
     };
 
 /// AtomTile — the Control Center quick-setting tile. Reads only `sem.tile` /
