@@ -1,6 +1,17 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 6 (Navigation & integration) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 7. Full gesture nav loop demoable; paradigm/profile/toggle state persists across every hop. 48/48 tests pass.
+**Status:** Phase 7 (APK & polish) — IN PROGRESS (2026-07-21). Code review done (2 fixes applied); release APK building. 50/50 tests pass.
+
+### Code review (2026-07-21) — 2 fixed, 1 optional
+- **F1 FIXED** — Control Center + Customization hardcoded a wallpaper gradient instead of the `system.homeWallpaper` token; now tokenized (consistent per-paradigm on Glass). Goldens regenerated.
+- **F2 FIXED** (user chose extend) — Glass×Vision now raises slider/toggle/chip fills to near-opaque (hue-preserving, so on-state text keeps contrast); card excluded on purpose (dark-translucent-with-light-text stays more legible than flipping to light). New tests lock it. `Compose._opaquify` + `_floorBlur`.
+- **F3 (optional, not done)** — chip/CTA inset highlight sits behind the label, not the full pill (alignment loosens the child constraint). Cosmetic.
+- Discarded a false-positive (inset shadows on childless boxes) after verifying `Container` tight-constrains null-alignment children — painter gets full size.
+
+### Phase 7 log — IN PROGRESS
+- Polish: app label → "Composable Launcher"; release buildType debug-signed (installs without a keystore); `DEMO.md` written (install + 3-min demo script for all four §7 moments).
+- Infra fix: removed a corrupt half-installed NDK and dropped the unneeded `ndkVersion` pin (app has zero native code).
+- APK: `flutter build apk --release` → `build/app/outputs/flutter-apk/app-release.apk` (rebuild with F1/F2 pending build completion). On-device install/run + Glass-blur check happen when the phone is on this machine (see DEMO.md).
 
 ### Phase 6 checkpoint log — COMPLETE (2026-07-21)
 **Gesture model (confirmed with user): gesture-first + safety net.**
