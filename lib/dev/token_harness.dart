@@ -1,88 +1,37 @@
 import 'package:flutter/material.dart';
-import '../theme/app_config.dart';
-import '../tokens/token_types.dart';
 import '../surfaces/control_center.dart';
+import '../surfaces/customization.dart';
 
-/// Phase-1 dev harness: the stub surface above, live paradigm + profile controls
-/// below. Flipping a control recomposes [AppSemantics] and the stub repaints —
-/// same widget code, visibly different tokens.
-class TokenHarness extends StatelessWidget {
+/// Surface host. Switches between Control Center and Customization and wires the
+/// live flow: the Accessibility-Shortcut deep-link opens Customization, and
+/// Apply returns to Control Center — where the just-changed paradigm/profile is
+/// already reflected (Phase-4 checkpoint). Full gesture navigation lands Phase 6.
+class TokenHarness extends StatefulWidget {
   const TokenHarness({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final ctrl = ThemeScope.of(context);
-    return Scaffold(
-      backgroundColor: const Color(0xFF141018),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: ControlCenter(
-                onAccessibilityShortcut: () => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('→ Customization profiles (Phase 4)'), duration: Duration(seconds: 1)),
-                ),
-              ),
-            ),
-            AnimatedBuilder(
-              animation: ctrl,
-              builder: (context, _) => _Controls(ctrl: ctrl),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  State<TokenHarness> createState() => _TokenHarnessState();
 }
 
-class _Controls extends StatelessWidget {
-  final AppConfigController ctrl;
-  const _Controls({required this.ctrl});
-
-  static const _profileLabels = {
-    Profile.motor: 'Motor',
-    Profile.vision: 'Vision',
-    Profile.cognitive: 'Cognitive',
-    Profile.oneHanded: 'One-Handed',
-  };
+class _TokenHarnessState extends State<TokenHarness> {
+  int _index = 0; // 0 = Control Center, 1 = Customization
 
   @override
   Widget build(BuildContext context) {
-    final cfg = ctrl.value;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-      color: const Color(0xFF1E1826),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      body: IndexedStack(
+        index: _index,
         children: [
-          const Text('Paradigm', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          SegmentedButton<Paradigm>(
-            segments: const [
-              ButtonSegment(value: Paradigm.skeuo, label: Text('Skeuo')),
-              ButtonSegment(value: Paradigm.glass, label: Text('Glass')),
-              ButtonSegment(value: Paradigm.minimal, label: Text('Minimal')),
-            ],
-            selected: {cfg.paradigm},
-            onSelectionChanged: (s) => ctrl.setParadigm(s.first),
-          ),
-          const SizedBox(height: 14),
-          const Text('Profiles', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final entry in _profileLabels.entries)
-                FilterChip(
-                  label: Text(entry.value),
-                  selected: cfg.hasProfile(entry.key),
-                  onSelected: (on) => ctrl.setProfile(entry.key, on),
-                ),
-            ],
-          ),
+          ControlCenter(onAccessibilityShortcut: () => setState(() => _index = 1)),
+          Customization(onApply: () => setState(() => _index = 0)),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.tune), label: 'Control'),
+          NavigationDestination(icon: Icon(Icons.palette_outlined), label: 'Customize'),
         ],
       ),
     );
