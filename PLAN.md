@@ -1,6 +1,19 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 4 (Customization) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 5. Thesis surface live: paradigm picker (per-paradigm specimens), 4 profile toggles, live 3-axis PreviewCard, Apply CTA; changes mutate `AppConfig` and flow to Control Center on re-entry. 44/44 tests pass.
+**Status:** Phase 5 (Home Screen) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 6. 20-app grid stable across paradigm swaps while chrome adapts (§7 #4 delivered); Home is now the base surface. 47/47 tests pass.
+
+### Phase 5 checkpoint log — COMPLETE (2026-07-21)
+**Shipped:**
+- `lib/surfaces/home.dart` — status bar; Clock + Weather `WidgetCard`s; **4×5 grid of 20 app icons** (Phone…Fitness); page indicator; dock as `WidgetCard(dock: true)` pill with 4 apps. App icons are CONTENT (fill/glyph/label constant); wallpaper/widgets/dock/radius/shadow are chrome.
+- **§7 #4 proven** — `test/home_golden_test.dart` (skeuo/glass/minimal): app-icon fills + glyphs pixel-identical across all three; wallpaper (warm→dark→light), icon radius (22/24/16), shadow (drop/luminous/none), widget + dock materials all differ.
+- Harness host now 3 surfaces: **Home (default)** / Control / Customize. Home's **Settings icon → Customization**; deep-links + Apply return already wired (shared `AppConfigController`, so paradigm/profile flows to Home too now).
+- Full suite **47/47**, analyze clean.
+
+**Discovered tokens (Q2 rule — added at semantic layer, logged):**
+1. `system.homeWallpaper` — Gradient per paradigm (skeuo warm radial; glass dark atmospheric; minimal light flat). Source only had Skeuo.
+2. `system.appIconLabelColor` + `system.appIconLabelShadow` — app-icon labels are chrome (text over wallpaper) and must stay legible: skeuo warm-dark + white glow; glass white + dark shadow; minimal ink, no shadow. `AppIcon` now reads these instead of a hardcoded warm ink.
+
+**Next:** Phase 6 — Navigation & integration (Home base; swipe-down → Control Center; Settings/long-press → Customization; state persists across nav). **Awaiting approval.**
 
 ### Phase 4 checkpoint log — COMPLETE (2026-07-21)
 **Shipped:**
