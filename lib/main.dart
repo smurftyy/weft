@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'theme/app_config.dart';
-import 'dev/token_harness.dart';
+import 'surfaces/launcher_shell.dart';
 
 void main() => runApp(const LauncherApp());
 
@@ -27,7 +27,7 @@ class _LauncherAppState extends State<LauncherApp> {
     return MaterialApp(
       title: 'Mobile Launcher',
       debugShowCheckedModeBanner: false,
-      home: LauncherTheme(controller: controller, child: const TokenHarness()),
+      home: LauncherTheme(controller: controller, child: const LauncherShell()),
     );
   }
 }

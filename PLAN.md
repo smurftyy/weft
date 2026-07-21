@@ -1,6 +1,15 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 5 (Home Screen) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 6. 20-app grid stable across paradigm swaps while chrome adapts (§7 #4 delivered); Home is now the base surface. 47/47 tests pass.
+**Status:** Phase 6 (Navigation & integration) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 7. Full gesture nav loop demoable; paradigm/profile/toggle state persists across every hop. 48/48 tests pass.
+
+### Phase 6 checkpoint log — COMPLETE (2026-07-21)
+**Gesture model (confirmed with user): gesture-first + safety net.**
+- `lib/surfaces/launcher_shell.dart` — Home is the base; **Control Center** is a swipe-down sheet (drag-down to reveal, drag-up / tap-scrim to dismiss) with a tappable **grab-handle safety net** at top so a demo can't stall; **Customization** slides in from the **Home Settings icon** (Q5) and Apply returns to Home; Accessibility-Shortcut in CC closes it and opens Customization. `PopScope` routes hardware-back to close the topmost overlay.
+- All three surfaces share the one `AppConfigController` (provided by `LauncherTheme` above the shell) → **state persists across navigation**.
+- `main.dart` now mounts `LauncherShell`; obsolete `dev/token_harness.dart` removed (dev stub/gallery kept for their golden tests).
+- **Integration test** `test/navigation_test.dart` drives the whole loop (open CC → toggle Wi-Fi → close → Settings → switch to Glass → Apply → reopen CC) and asserts the paradigm swap + toggle both persisted. Full suite **48/48**, analyze clean.
+
+**Next:** Phase 7 — release APK build + on-device polish. Device-first: I can build the APK here; sideload/run happens when the phone is on this machine (still-pending on-device Glass-blur check folds in here). **Awaiting approval.**
 
 ### Phase 5 checkpoint log — COMPLETE (2026-07-21)
 **Shipped:**

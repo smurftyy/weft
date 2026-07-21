@@ -72,6 +72,7 @@ class Home extends StatelessWidget {
             children: [
               for (var c = 0; c < 4; c++)
                 GestureDetector(
+                  key: _apps[r * 4 + c].label == 'Settings' ? const ValueKey('home-settings') : null,
                   onTap: _apps[r * 4 + c].label == 'Settings' ? onOpenSettings : null,
                   child: _icon(_apps[r * 4 + c]),
                 ),

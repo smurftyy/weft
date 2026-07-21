@@ -48,6 +48,7 @@ class ControlCenter extends StatelessWidget {
     Widget tile(_TileCfg c) {
       final isOn = on(c.id, c.defaultOn);
       return GestureDetector(
+        key: ValueKey('cc-tile-${c.id}'),
         behavior: HitTestBehavior.opaque,
         onTap: () => ctrl.setToggle(c.id, !isOn),
         child: AtomTile(
