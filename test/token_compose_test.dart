@@ -80,6 +80,22 @@ void main() {
     });
   });
 
+  group('Glass×Vision reduces transparency on small controls (F2)', () {
+    test('slider/toggle/chip grounds go near-opaque, blur off', () {
+      final s = sem(Paradigm.glass, {Profile.vision});
+      expect(s.slider.track(WState.enabled).blurSigma, 0);
+      expect(s.slider.track(WState.enabled).color!.a, greaterThanOrEqualTo(0.92));
+      expect(s.toggle.track(true).color!.a, greaterThanOrEqualTo(0.92));
+      expect(s.chip.ground(WState.selected).color!.a, greaterThanOrEqualTo(0.92));
+    });
+
+    test('does not fire on Glass without Vision (stays translucent)', () {
+      final s = sem(Paradigm.glass);
+      expect(s.toggle.track(true).color!.a, lessThan(0.92));
+      expect(s.slider.track(WState.enabled).blurSigma, greaterThan(0));
+    });
+  });
+
   group('three-axis composition (Skeuo × Vision × One-Handed)', () {
     test('composes without error; Vision scalar applies, One-Handed is surface no-op', () {
       final s = sem(Paradigm.skeuo, {Profile.vision, Profile.oneHanded});

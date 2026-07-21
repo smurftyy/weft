@@ -100,29 +100,49 @@ class Compose {
   static double toggleHeight(Set<Profile> p) => _motor(p) ? 44 : 34;
   static double toggleThumbSize(Set<Profile> p) => _motor(p) ? 36 : 26;
 
-  /// General glass hardening under Vision: reduce transparency by flooring the
-  /// backdrop blur. One rule, applied to the new backing roles (slider/toggle/
-  /// chip/card grounds). Tile/container/plate have their own explicit handling.
-  static SurfaceStyle _hardenGlass(SurfaceStyle s, Paradigm id, Set<Profile> p) =>
+  /// Glass×Vision transparency reduction (F2). Raises translucent fills to
+  /// near-opaque so small controls stay legible under Vision. Preserves hue —
+  /// on-states keep saturation, so their (often white) text keeps contrast —
+  /// rather than compositing over a light paper that would wash them out. Blur
+  /// drops to zero. One rule, applied to slider/toggle/chip grounds.
+  static SurfaceStyle _opaquify(SurfaceStyle s, Paradigm id, Set<Profile> p) {
+    if (!(id == Paradigm.glass && _vision(p))) return s;
+    Color op(Color c) => c.a >= 0.92 ? c : c.withValues(alpha: 0.92);
+    Gradient? g = s.gradient;
+    if (g is LinearGradient) {
+      g = LinearGradient(
+        begin: g.begin,
+        end: g.end,
+        stops: g.stops,
+        colors: [for (final c in g.colors) op(c)],
+      );
+    }
+    return s.copyWith(color: s.color == null ? null : op(s.color!), gradient: g, blurSigma: 0);
+  }
+
+  /// Card is excluded from [_opaquify]: its content ink is surface-owned, and a
+  /// dark translucent card with light content stays legible. Vision just floors
+  /// its blur (reduced transparency without flipping the card to light).
+  static SurfaceStyle _floorBlur(SurfaceStyle s, Paradigm id, Set<Profile> p) =>
       (id == Paradigm.glass && _vision(p) && s.blurSigma > 0)
           ? s.copyWith(blurSigma: VisionProfile.glassBlurFloor)
           : s;
 
   static SurfaceStyle sliderTrack(ParadigmBindings b, WState s, Set<Profile> p) =>
-      _hardenGlass(b.sliderTrack(s), b.id, p);
+      _opaquify(b.sliderTrack(s), b.id, p);
   static SurfaceStyle sliderFill(ParadigmBindings b, WState s, Set<Profile> p) =>
-      b.sliderFill(s);
+      _opaquify(b.sliderFill(s), b.id, p);
   static SurfaceStyle sliderThumbStyle(ParadigmBindings b, WState s, Set<Profile> p) =>
       b.sliderThumb(s);
 
   static SurfaceStyle toggleTrack(ParadigmBindings b, WState s, Set<Profile> p) =>
-      _hardenGlass(b.toggleTrack(s), b.id, p);
+      _opaquify(b.toggleTrack(s), b.id, p);
   static SurfaceStyle toggleThumbStyle(ParadigmBindings b, WState s, Set<Profile> p) =>
       b.toggleThumb(s);
 
   static SurfaceStyle chipGround(ParadigmBindings b, WState s, Set<Profile> p) =>
-      _hardenGlass(b.chipGround(s), b.id, p);
+      _opaquify(b.chipGround(s), b.id, p);
 
   static SurfaceStyle cardGround(ParadigmBindings b, Set<Profile> p) =>
-      _hardenGlass(b.cardGround(), b.id, p);
+      _floorBlur(b.cardGround(), b.id, p);
 }
