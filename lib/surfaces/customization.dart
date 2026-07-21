@@ -39,7 +39,7 @@ class Customization extends StatelessWidget {
 
     return Stack(
       children: [
-        const Positioned.fill(child: _CzWallpaper()),
+        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.homeWallpaper))),
         Positioned.fill(
           child: SurfaceBox(
             style: sem.container.style,
@@ -214,16 +214,3 @@ class _ApplyCta extends StatelessWidget {
   }
 }
 
-class _CzWallpaper extends StatelessWidget {
-  const _CzWallpaper();
-  @override
-  Widget build(BuildContext context) => const DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF3B2F63), Color(0xFF123240), Color(0xFF6B3B2A)],
-          ),
-        ),
-      );
-}

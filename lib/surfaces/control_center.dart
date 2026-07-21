@@ -134,7 +134,7 @@ class ControlCenter extends StatelessWidget {
 
     return Stack(
       children: [
-        const Positioned.fill(child: _CCWallpaper()),
+        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.homeWallpaper))),
         Positioned.fill(
           child: SurfaceBox(style: sem.container.style, radius: 0, child: content),
         ),
@@ -165,20 +165,6 @@ class _StatusBar extends StatelessWidget {
       ),
     );
   }
-}
-
-class _CCWallpaper extends StatelessWidget {
-  const _CCWallpaper();
-  @override
-  Widget build(BuildContext context) => const DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF3B2F63), Color(0xFF123240), Color(0xFF6B3B2A)],
-          ),
-        ),
-      );
 }
 
 class _TileCfg {

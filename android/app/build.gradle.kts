@@ -7,7 +7,8 @@ plugins {
 android {
     namespace = "com.unilag.ins202.mobile_launcher"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // No native code in this app (pure Dart + cupertino_icons), so the NDK is
+    // not required. Dropping the pin avoids AGP validating/downloading it.
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
