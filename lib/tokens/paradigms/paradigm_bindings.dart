@@ -30,9 +30,16 @@ abstract class ParadigmBindings {
   Color sectionTitleColor();
   Color sectionCaptionColor();
 
-  // ── App icon (CONTENT: only radius + shadow are paradigm-tokenized, §3.4) ──
+  // ── App icon (CONTENT: fill/glyph constant; only radius+shadow tokenized) ──
   double get appIconRadius;
   List<BoxShadow> get appIconShadow;
+  // App-icon LABEL is chrome (text over the wallpaper) — must stay legible on
+  // each paradigm's ground. Discovered tokens (Q2); source only tuned Skeuo.
+  Color get appIconLabelColor;
+  Shadow? get appIconLabelShadow;
+
+  // ── Home wallpaper (chrome — changes across paradigms; §3.4) ──
+  Gradient get homeWallpaper;
 
   // ── Base type sizes (px); Vision multiplies these at the profile tier ──
   double get titleSize;

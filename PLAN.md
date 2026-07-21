@@ -1,6 +1,17 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 3 (Control Center) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 4. Assembled Control Center works across all 3 paradigms (swap-only, zero widget changes) + Motor/Vision overlays; stateful toggles; 38/38 tests pass.
+**Status:** Phase 4 (Customization) — **COMPLETE ✅ (2026-07-21)**, awaiting review before Phase 5. Thesis surface live: paradigm picker (per-paradigm specimens), 4 profile toggles, live 3-axis PreviewCard, Apply CTA; changes mutate `AppConfig` and flow to Control Center on re-entry. 44/44 tests pass.
+
+### Phase 4 checkpoint log — COMPLETE (2026-07-21)
+**Shipped:**
+- `lib/surfaces/customization.dart` — paradigm picker (3 cards, each rendered in its OWN paradigm via `ParadigmScope`, holding a pure `_MaterialSpecimen` — no icon/label/status props); 4 profile toggles (Motor/Vision/Cognitive/One-Handed, all real bindings); `LIVE PREVIEW` `PreviewCard`; full-width `Apply` CTA in the active paradigm's on-state material.
+- `lib/theme/paradigm_scope.dart` — forces a paradigm for a subtree by injecting a fresh `AppSemantics` into the local `Theme`. Lets picker specimens stay paradigm-stable regardless of active paradigm (content vs chrome, again).
+- Harness became a **surface host** (`IndexedStack` + `NavigationBar`): Accessibility-Shortcut deep-link → Customization; Apply → back to Control Center with the change already applied. Demonstrates live flow (shared `AppConfigController`).
+- `test/customization_golden_test.dart` — 6 cases incl. **`skeuo_vision_onehanded`** (§7 acceptance #3: three-axis in the preview — dimensional × enlarged × thumb-zone-clustered with REACHABLE hairline) and `skeuo_all4`. Full suite **44/44**, analyze clean.
+
+**Live-flow note:** paradigm/profile now flow to Control Center on re-entry (verified via shared controller in the host). Flow to **Home** completes in Phase 5 once Home exists.
+
+**Next:** Phase 5 — Home Screen (4×5 app grid = content stable across swaps; Clock/Weather WidgetCards; dock as WidgetCard pill; page indicator; warm Skeuo wallpaper → Glass/Minimal chrome-only swap). **Awaiting approval.**
 
 ### Phase 3 checkpoint log — COMPLETE (2026-07-21)
 **Shipped:** `lib/surfaces/control_center.dart` — status bar, page header, Connectivity 2×2 (Wi-Fi/Bluetooth/Airplane/Cellular), Brightness+Volume sliders with icon endcaps, Quick-Actions 2×2 (Voice/Flashlight/DND/Rotation), "More" card (Location/Battery Saver/Focus Mode toggles + Accessibility-Shortcut deep-link row). Built from Phase-2 atoms; every visual from the semantic tier.

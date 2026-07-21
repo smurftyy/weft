@@ -87,6 +87,20 @@ class GlassBindings extends ParadigmBindings {
   List<BoxShadow> get appIconShadow => Prims.appIconShadowGlass;
 
   @override
+  Color get appIconLabelColor => Prims.white;
+
+  @override
+  Shadow? get appIconLabelShadow =>
+      const Shadow(color: Color(0x59000000), offset: Offset(0, 1), blurRadius: 3);
+
+  @override
+  Gradient get homeWallpaper => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF2A2350), Color(0xFF10323A), Color(0xFF52301F)],
+      );
+
+  @override
   double get titleSize => Prims.textTitle;
 
   @override

@@ -62,6 +62,19 @@ class MinimalBindings extends ParadigmBindings {
   List<BoxShadow> get appIconShadow => Prims.appIconShadowMinimal; // none
 
   @override
+  Color get appIconLabelColor => Prims.ink900;
+
+  @override
+  Shadow? get appIconLabelShadow => null; // flat: no text shadow
+
+  @override
+  Gradient get homeWallpaper => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [Color(0xFFF5F4F0), Color(0xFFE8E6DF)],
+      );
+
+  @override
   double get titleSize => Prims.textPage - 2; // minimal leans larger headers (26)
 
   @override

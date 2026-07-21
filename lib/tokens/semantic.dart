@@ -140,6 +140,13 @@ class SystemTokens {
   /// AppIcon is CONTENT (§3.4): only radius + shadow are paradigm-tokenized.
   double get appIconRadius => _b.appIconRadius;
   List<BoxShadow> get appIconShadow => _b.appIconShadow;
+
+  /// App-icon label is chrome (text over the wallpaper).
+  Color get appIconLabelColor => _b.appIconLabelColor;
+  Shadow? get appIconLabelShadow => _b.appIconLabelShadow;
+
+  /// Home wallpaper — chrome; changes across paradigms.
+  Gradient get homeWallpaper => _b.homeWallpaper;
 }
 
 class SliderTokens {

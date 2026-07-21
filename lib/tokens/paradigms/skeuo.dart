@@ -84,6 +84,16 @@ class SkeuoBindings extends ParadigmBindings {
   List<BoxShadow> get appIconShadow => Prims.appIconShadowSkeuo;
 
   @override
+  Color get appIconLabelColor => const Color(0xFF2E2620); // warm dark ink
+
+  @override
+  Shadow? get appIconLabelShadow =>
+      const Shadow(color: Color(0x80FFFFFF), offset: Offset(0, 1), blurRadius: 1);
+
+  @override
+  Gradient get homeWallpaper => Prims.warmWallpaper;
+
+  @override
   double get titleSize => Prims.textTitle; // 20
 
   @override

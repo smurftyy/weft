@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../surfaces/home.dart';
 import '../surfaces/control_center.dart';
 import '../surfaces/customization.dart';
 
@@ -14,7 +15,9 @@ class TokenHarness extends StatefulWidget {
 }
 
 class _TokenHarnessState extends State<TokenHarness> {
-  int _index = 0; // 0 = Control Center, 1 = Customization
+  int _index = 0; // 0 = Home, 1 = Control Center, 2 = Customization
+
+  void _go(int i) => setState(() => _index = i);
 
   @override
   Widget build(BuildContext context) {
@@ -22,14 +25,16 @@ class _TokenHarnessState extends State<TokenHarness> {
       body: IndexedStack(
         index: _index,
         children: [
-          ControlCenter(onAccessibilityShortcut: () => setState(() => _index = 1)),
-          Customization(onApply: () => setState(() => _index = 0)),
+          Home(onOpenSettings: () => _go(2)),
+          ControlCenter(onAccessibilityShortcut: () => _go(2)),
+          Customization(onApply: () => _go(0)),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
+        onDestinationSelected: _go,
         destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.tune), label: 'Control'),
           NavigationDestination(icon: Icon(Icons.palette_outlined), label: 'Customize'),
         ],

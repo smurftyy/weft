@@ -35,6 +35,7 @@ class AppIcon extends StatelessWidget {
       child: glyph,
     );
     if (label.trim().isEmpty) return icon;
+    final sysShadow = sys.appIconLabelShadow;
     return SizedBox(
       width: 74,
       child: Column(
@@ -47,10 +48,10 @@ class AppIcon extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
-              color: Color(0xFF2E2620),
-              shadows: [Shadow(color: Color(0x80FFFFFF), offset: Offset(0, 1), blurRadius: 1)],
+              color: sys.appIconLabelColor, // chrome: legible on each wallpaper
+              shadows: sysShadow == null ? null : [sysShadow],
             ),
           ),
         ],
