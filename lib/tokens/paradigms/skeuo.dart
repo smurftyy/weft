@@ -251,4 +251,22 @@ class SkeuoBindings extends ParadigmBindings {
 
   @override
   Color previewHairline() => const Color(0x3814161E);
+
+  @override
+  // T7: raised cream card — wallpaper becomes edge treatment, not UI ground.
+  SurfaceStyle customizationSurface() => const SurfaceStyle(
+        gradient: Prims.skeuoCardGround,
+        borderColor: Color(0x0D14161E),
+        shadows: [
+          BoxShadow(color: Color(0x2E14161E), offset: Offset(0, 12), blurRadius: 28),
+          BoxShadow(color: Color(0x1F14161E), offset: Offset(0, 2), blurRadius: 4),
+        ],
+        insets: [InsetSpec.skeuoCardHighlight],
+      );
+
+  @override
+  EdgeInsets get customizationInset => const EdgeInsets.all(12);
+
+  @override
+  double get customizationRadius => Prims.rad4Xl; // 24
 }

@@ -73,4 +73,12 @@ abstract class ParadigmBindings {
   SurfaceStyle previewPanel();
   Color previewCaption();
   Color previewHairline();
+
+  // ── Customization surface container (T7) ──
+  // Skeuo floats the content in a raised cream card (wallpaper = edge
+  // treatment); Glass/Minimal keep an edge-to-edge container. Expressed as a
+  // style + inset + radius so the surface stays paradigm-agnostic.
+  SurfaceStyle customizationSurface();
+  EdgeInsets get customizationInset; // EdgeInsets.zero → full-bleed
+  double get customizationRadius;
 }

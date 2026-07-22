@@ -153,4 +153,11 @@ class MinimalBindings extends ParadigmBindings {
 
   @override
   Color previewHairline() => const Color(0xFFC7CAD2);
+
+  @override
+  SurfaceStyle customizationSurface() => container(); // T7: edge-to-edge flat
+  @override
+  EdgeInsets get customizationInset => EdgeInsets.zero;
+  @override
+  double get customizationRadius => 0;
 }

@@ -244,4 +244,11 @@ class GlassBindings extends ParadigmBindings {
 
   @override
   Color previewHairline() => Prims.white.withValues(alpha: 0.32);
+
+  @override
+  SurfaceStyle customizationSurface() => container(); // T7: edge-to-edge glass
+  @override
+  EdgeInsets get customizationInset => EdgeInsets.zero;
+  @override
+  double get customizationRadius => 0;
 }

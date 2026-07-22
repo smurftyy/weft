@@ -154,6 +154,12 @@ class SystemTokens {
   /// it (T5). `homeWallpaper` kept as an alias for existing call sites.
   Gradient get wallpaper => Compose.wallpaper(_b, _p);
   Gradient get homeWallpaper => wallpaper;
+
+  /// Customization container (T7): Skeuo floats a raised cream card; Glass/
+  /// Minimal stay edge-to-edge (inset zero, radius 0).
+  SurfaceStyle get customizationSurface => _b.customizationSurface();
+  EdgeInsets get customizationInset => _b.customizationInset;
+  double get customizationRadius => _b.customizationRadius;
 }
 
 class SliderTokens {
