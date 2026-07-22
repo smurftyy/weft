@@ -61,7 +61,12 @@ class _LauncherShellState extends State<LauncherShell> with TickerProviderStateM
           _closeCC();
         }
       },
-      child: Stack(
+      // Transparent Material provides the DefaultTextStyle baseline for every
+      // surface below (so Text isn't the yellow debug fallback) while painting
+      // nothing over the per-paradigm wallpaper.
+      child: Material(
+        type: MaterialType.transparency,
+        child: Stack(
         children: [
           // Base surface.
           Home(onOpenSettings: _openCz),
@@ -128,6 +133,7 @@ class _LauncherShellState extends State<LauncherShell> with TickerProviderStateM
             },
           ),
         ],
+        ),
       ),
     );
   }
