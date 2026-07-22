@@ -102,71 +102,124 @@ class Home extends StatelessWidget {
       ],
     );
 
+    // Shrink-wrapped grid with fixed row gaps — used when the grid can't own the
+    // free vertical space (One-Handed clustering, T13).
+    final clusteredGrid = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (var r = 0; r < spec.rows; r++) ...[
+          if (r > 0) SizedBox(height: spec.spacing + 6),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (var c = 0; c < spec.cols; c++)
+                _gridCell(shown, r * spec.cols + c, spec.iconSize),
+            ],
+          ),
+        ],
+      ],
+    );
+
+    final widgets = SizedBox(
+      height: 150,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 142,
+            child: WidgetCard(
+              title: 'Clock',
+              child: LiveTime(
+                builder: (context, now) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_weekday(now), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFFB24C34))),
+                    FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(_hourMinute(now), style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700, height: 1, color: ink))),
+                    Text(_monthDay(now), style: TextStyle(fontSize: 13, color: cap)),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 100,
+            child: WidgetCard(
+              title: 'Weather',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(Icons.wb_cloudy, color: cap, size: 26),
+                  FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text('72°', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, height: 1, color: ink))),
+                  Text('H:78 L:61', style: TextStyle(fontSize: 11.5, color: cap)),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    final dock = WidgetCard(
+      dock: true,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [for (final a in _dock) _icon(a, size: 54, label: false)],
+      ),
+    );
+
+    // T13: One-Handed is a LAYOUT constraint (not a token delta). Widgets + grid
+    // cluster into the lower zone (bottom-anchored via a reverse scroll, which
+    // also guards against overflow); the upper region is left as wallpaper. The
+    // dock is unchanged (already at the bottom).
+    final oneHanded = sem.profiles.contains(Profile.oneHanded);
+    final column = oneHanded
+        ? Column(
+            children: [
+              _StatusBar(ink: ink),
+              Expanded(
+                child: SingleChildScrollView(
+                  reverse: true, // anchor content to the bottom (thumb zone)
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      widgets,
+                      const SizedBox(height: 16),
+                      clusteredGrid,
+                      const SizedBox(height: 4),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _PageIndicator(ink: ink, scale: spec.indicatorScale),
+              const SizedBox(height: 10),
+              dock,
+            ],
+          )
+        : Column(
+            children: [
+              _StatusBar(ink: ink),
+              const SizedBox(height: 12),
+              widgets,
+              const SizedBox(height: 16),
+              Expanded(child: grid),
+              const SizedBox(height: 8),
+              _PageIndicator(ink: ink, scale: spec.indicatorScale),
+              const SizedBox(height: 10),
+              dock,
+            ],
+          );
+
     return Stack(
       children: [
         Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.homeWallpaper))),
         SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
-            child: Column(
-              children: [
-                _StatusBar(ink: ink),
-                const SizedBox(height: 12),
-                SizedBox(
-                  height: 150,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 142,
-                        child: WidgetCard(
-                          title: 'Clock',
-                          child: LiveTime(
-                            builder: (context, now) => Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(_weekday(now), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFFB24C34))),
-                                FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(_hourMinute(now), style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700, height: 1, color: ink))),
-                                Text(_monthDay(now), style: TextStyle(fontSize: 13, color: cap)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        flex: 100,
-                        child: WidgetCard(
-                          title: 'Weather',
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Icon(Icons.wb_cloudy, color: cap, size: 26),
-                              FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text('72°', style: TextStyle(fontSize: 34, fontWeight: FontWeight.w700, height: 1, color: ink))),
-                              Text('H:78 L:61', style: TextStyle(fontSize: 11.5, color: cap)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Expanded(child: grid),
-                const SizedBox(height: 8),
-                _PageIndicator(ink: ink, scale: spec.indicatorScale),
-                const SizedBox(height: 10),
-                WidgetCard(
-                  dock: true,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [for (final a in _dock) _icon(a, size: 54, label: false)],
-                  ),
-                ),
-              ],
-            ),
+            child: column,
           ),
         ),
       ],

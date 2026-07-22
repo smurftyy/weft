@@ -26,6 +26,17 @@ Perceptibility + demo readiness. New semantic tokens logged as added (Q2 rule):
 - **T12 Weft branding** — done. **T14 copy** — verified/updated. ✅
 - Tests: `phase8_token_test` gains T10 density cases; `home_golden_test`/`navigation_test` freeze the clock. **63/63 pass**, analyze clean.
 
+**P1 CHECKPOINT — PASSED (2026-07-22 ~09:34).** Release APK (44.2MB) installed + verified on emulator: live clock ticking ("Wednesday 9:33 July 22", real date), Skeuo Customization card, density control (goldens), persistence held across reinstall.
+
+### Phase 8 — P2 (stretch) — partial, by design
+- **T13 One-Handed — HOME shipped as a surface LAYOUT delta.** Conditional layout in `home.dart` (reads `sem.profiles`): widgets + app grid cluster into the lower zone (bottom-anchored via a reverse `SingleChildScrollView`, which also guards overflow across densities); upper region stays wallpaper; dock unchanged. Golden `home_skeuo_onehanded`. This **exceeds** the handoff's documented fallback ("One-Handed at Preview scale").
+  - **CONTROL CENTER One-Handed: deferred (slip-acceptable).** A clean lower-half shift on the scroll-filling CC panel was judged risky on submission day; CC One-Handed remains at preview-scale (still fully composed in the Customization PreviewCard). Documented per the handoff's explicit acceptable outcome.
+- **T14 copy** — Motor "Larger targets, less motion" ✓ / Vision "Higher contrast, larger text" ✓ (unchanged); Cognitive/One-Handed copy updated to reflect surface behavior.
+- **T15 demo tuning** — not needed: Glass perceptibility, Cognitive desaturation (icons/wallpaper/cards) and Vision cascade all read clearly at surface scale without "look closely".
+- **64/64 tests pass**, analyze clean.
+
+**Deferred to future work (logged per handoff):** saveable Control Center profiles (Work/Travel/Focus); functional app launching / app drawer / search / folders / notification shade / widget picker; split-preview diff mode; additional paradigms/profiles; Style Dictionary integration; Control-Center One-Handed at surface scale.
+
 ### Phase 7 recap (2026-07-21) — Code review done (2 fixes applied); release APK building. 50/50 tests pass.
 
 ### Code review (2026-07-21) — 2 fixed, 1 optional

@@ -43,4 +43,13 @@ void main() {
           find.byType(Home), matchesGoldenFile('goldens/home_${p.name}_cognitive.png'));
     });
   }
+
+  // T13: One-Handed clusters the grid + widgets into the lower zone (layout
+  // delta), leaving the upper region as wallpaper. Dock unchanged.
+  testWidgets('home: skeuo + one-handed clusters low', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(393, 852));
+    await tester.pumpWidget(surface(Paradigm.skeuo, {Profile.oneHanded}));
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(Home), matchesGoldenFile('goldens/home_skeuo_onehanded.png'));
+  });
 }
