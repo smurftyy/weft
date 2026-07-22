@@ -1,9 +1,11 @@
 import 'package:flutter/painting.dart';
 import 'primitives.dart';
 import 'token_types.dart';
+import 'color_util.dart';
 import 'paradigms/paradigm_bindings.dart';
 import 'profiles/motor.dart';
 import 'profiles/vision.dart';
+import 'profiles/cognitive.dart';
 
 /// COMPOSITION — folds paradigm bindings (Tier 3) with profile deltas (Tier 4)
 /// into resolved values. The semantic tier calls these; nothing else does.
@@ -24,6 +26,19 @@ class Compose {
 
   static bool _vision(Set<Profile> p) => p.contains(Profile.vision);
   static bool _motor(Set<Profile> p) => p.contains(Profile.motor);
+  static bool _cognitive(Set<Profile> p) => p.contains(Profile.cognitive);
+
+  /// COGNITIVE delta (T5) — an orthogonal desaturation that composes over any
+  /// paradigm (Motor/Vision shape). When active, chroma-bearing surfaces mute:
+  /// icon backings, widget cards, wallpaper, and Control-Center on-states/fills
+  /// all drop saturation so the surface reads calmer. Neutral surfaces are
+  /// unaffected (desaturating near-white is a no-op). One helper, applied at the
+  /// chroma-bearing roles — not per widget.
+  static SurfaceStyle _mute(SurfaceStyle s, Set<Profile> p, [double amt = CognitiveProfile.desaturation]) {
+    if (!_cognitive(p)) return s;
+    final g = s.gradient == null ? null : Tone.desaturateGradient(s.gradient!, amt);
+    return s.copyWith(color: s.color == null ? null : Tone.desaturate(s.color!, amt), gradient: g);
+  }
 
   /// THE generalized cascade predicate (finding #4). When true, any opaque
   /// backing element in the current intersection reduces to nothing and glass
@@ -46,8 +61,10 @@ class Compose {
 
   // ── Tile ──
   static SurfaceStyle tileGround(ParadigmBindings b, WState s, Set<Profile> profiles) {
-    if (backingDropped(b.id, profiles)) return VisionProfile.glassTileGround(s);
-    return b.tileGround(s);
+    final base = backingDropped(b.id, profiles)
+        ? VisionProfile.glassTileGround(s)
+        : b.tileGround(s);
+    return _mute(base, profiles); // Cognitive desaturates the on-state chroma (T5)
   }
 
   static Color tileInk(ParadigmBindings b, WState s, Set<Profile> profiles) {
@@ -76,6 +93,25 @@ class Compose {
     if (backingDropped(b.id, profiles)) return SurfaceStyle.none;
     return b.sectionPlate();
   }
+
+  /// Section title colour — Cognitive lowers header emphasis by blending the
+  /// title toward the caption colour (T5). No change otherwise.
+  static Color sectionTitle(ParadigmBindings b, Set<Profile> p) {
+    final base = b.sectionTitleColor();
+    if (!_cognitive(p)) return base;
+    return Color.lerp(base, b.sectionCaptionColor(), CognitiveProfile.headerEmphasisBlend)!;
+  }
+
+  // ── App icon backing (T2) — chrome derived from the icon's content colour.
+  // Cognitive (T5) desaturates the content before the paradigm builds material.
+  static SurfaceStyle appIconBacking(ParadigmBindings b, Color content, Set<Profile> p) {
+    final c = _cognitive(p) ? Tone.desaturate(content, CognitiveProfile.iconDesaturation) : content;
+    return b.appIconBacking(c);
+  }
+
+  // ── Wallpaper (T1) — Cognitive reduces its saturation (T5).
+  static Gradient wallpaper(ParadigmBindings b, Set<Profile> p) =>
+      _cognitive(p) ? Tone.desaturateGradient(b.homeWallpaper, CognitiveProfile.desaturation) : b.homeWallpaper;
 
   // ── Orthogonal scalars ──
   static double ringWidth(Set<Profile> profiles) =>
@@ -131,7 +167,7 @@ class Compose {
   static SurfaceStyle sliderTrack(ParadigmBindings b, WState s, Set<Profile> p) =>
       _opaquify(b.sliderTrack(s), b.id, p);
   static SurfaceStyle sliderFill(ParadigmBindings b, WState s, Set<Profile> p) =>
-      _opaquify(b.sliderFill(s), b.id, p);
+      _mute(_opaquify(b.sliderFill(s), b.id, p), p); // Cognitive mutes fill (T5)
   static SurfaceStyle sliderThumbStyle(ParadigmBindings b, WState s, Set<Profile> p) =>
       b.sliderThumb(s);
 
@@ -144,5 +180,5 @@ class Compose {
       _opaquify(b.chipGround(s), b.id, p);
 
   static SurfaceStyle cardGround(ParadigmBindings b, Set<Profile> p) =>
-      _floorBlur(b.cardGround(), b.id, p);
+      _mute(_floorBlur(b.cardGround(), b.id, p), p); // Cognitive mutes card chroma (T5)
 }

@@ -175,16 +175,32 @@ class _MaterialSpecimen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = context.sem.tile;
-    return SizedBox(
-      height: 40,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SurfaceBox(style: tile.ground(WState.enabled), radius: tile.radius, width: 34, height: 40),
-          const SizedBox(width: 6),
-          SurfaceBox(style: tile.ground(WState.selected), radius: tile.radius, width: 34, height: 40),
-        ],
+    final sem = context.sem;
+    final tile = sem.tile;
+    // T4 — each specimen sits on a mini-backdrop of ITS OWN paradigm's wallpaper
+    // (a small crop for Glass, warm cream patch for Skeuo, flat neutral for
+    // Minimal), so a Glass specimen tile has content to blur. The tiles remain a
+    // pure material specimen (no icon/label/status).
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: SizedBox(
+        height: 48,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            DecoratedBox(decoration: BoxDecoration(gradient: sem.system.wallpaper)),
+            Center(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SurfaceBox(style: tile.ground(WState.enabled), radius: tile.radius, width: 32, height: 36),
+                  const SizedBox(width: 6),
+                  SurfaceBox(style: tile.ground(WState.selected), radius: tile.radius, width: 32, height: 36),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

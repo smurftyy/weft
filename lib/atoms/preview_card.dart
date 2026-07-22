@@ -54,6 +54,24 @@ class PreviewCard extends StatelessWidget {
       );
     }
 
+    // T3 — a bounded backdrop region inside the panel that renders the current
+    // paradigm's wallpaper, so Glass preview tiles have varied content to blur
+    // (their BackdropFilter now reveals the wallpaper behind).
+    final wallpaper = context.sem.system.wallpaper;
+    final region = ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: SizedBox(
+        height: reach != null ? 150 : 100,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            DecoratedBox(decoration: BoxDecoration(gradient: wallpaper)),
+            Padding(padding: const EdgeInsets.all(10), child: interior),
+          ],
+        ),
+      ),
+    );
+
     final panel = pv.panel;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -68,7 +86,7 @@ class PreviewCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          SizedBox(height: reach != null ? 150 : 100, child: interior),
+          region,
           const SizedBox(height: 10),
           Text('PREVIEW',
               style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.1, color: pv.caption)),

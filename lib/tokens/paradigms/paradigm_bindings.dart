@@ -30,9 +30,14 @@ abstract class ParadigmBindings {
   Color sectionTitleColor();
   Color sectionCaptionColor();
 
-  // ── App icon (CONTENT: fill/glyph constant; only radius+shadow tokenized) ──
+  // ── App icon ──
+  // GLYPH stays content (brand identity constant); only radius + shadow +
+  // BACKING are paradigm-tokenized (§3.4 / T2 content-vs-chrome fix). The
+  // backing is derived from the icon's content colour so each paradigm renders
+  // its own material (raised / translucent / flat) around the same glyph.
   double get appIconRadius;
   List<BoxShadow> get appIconShadow;
+  SurfaceStyle appIconBacking(Color content);
   // App-icon LABEL is chrome (text over the wallpaper) — must stay legible on
   // each paradigm's ground. Discovered tokens (Q2); source only tuned Skeuo.
   Color get appIconLabelColor;

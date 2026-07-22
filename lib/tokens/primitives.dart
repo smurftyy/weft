@@ -197,6 +197,25 @@ abstract final class Prims {
     stops: [0.0, 0.46, 0.78, 1.0],
   );
 
+  /// Glass wallpaper (T1) — a saturated, high-variance diagonal so a
+  /// [BackdropFilter] blur reveals visibly different colour regions across the
+  /// panel (warm-magenta → deep-blue → violet → deep-blue). Chrome; changes
+  /// across paradigms.
+  static const LinearGradient glassWallpaper = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFFA8226E), Color(0xFF232C86), Color(0xFF6A2FA0), Color(0xFF17245C)],
+    stops: [0.0, 0.38, 0.68, 1.0],
+  );
+
+  /// Minimal wallpaper (T1) — soft neutral off-white, near-flat, barely
+  /// perceptible warmth.
+  static const LinearGradient minimalWallpaper = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [Color(0xFFF6F5F1), Color(0xFFEDEBE4)],
+  );
+
   // ────────────────────────────────────────────────────────────────────────
   // SHADOW PRIMITIVES — OUTER/drop only (Flutter BoxShadow has no inset).
   // ────────────────────────────────────────────────────────────────────────

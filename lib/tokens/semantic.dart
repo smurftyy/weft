@@ -42,7 +42,7 @@ class AppSemantics extends ThemeExtension<AppSemantics> {
   SectionHeaderTokens get sectionHeader => SectionHeaderTokens(_b, profiles);
   TextTokens get text => TextTokens(_b, profiles);
   StateTokens get state => StateTokens(profiles);
-  SystemTokens get system => SystemTokens(_b);
+  SystemTokens get system => SystemTokens(_b, profiles);
   SliderTokens get slider => SliderTokens(_b, profiles);
   ToggleTokens get toggle => ToggleTokens(_b, profiles);
   ChipTokens get chip => ChipTokens(_b, profiles);
@@ -110,7 +110,7 @@ class SectionHeaderTokens {
   const SectionHeaderTokens(this._b, this._p);
 
   SurfaceStyle get plate => Compose.sectionPlate(_b, _p);
-  Color get titleColor => _b.sectionTitleColor();
+  Color get titleColor => Compose.sectionTitle(_b, _p); // Cognitive lowers emphasis (T5)
   Color get captionColor => _b.sectionCaptionColor();
 }
 
@@ -135,18 +135,25 @@ class StateTokens {
 
 class SystemTokens {
   final ParadigmBindings _b;
-  const SystemTokens(this._b);
+  final Set<Profile> _p;
+  const SystemTokens(this._b, this._p);
 
-  /// AppIcon is CONTENT (§3.4): only radius + shadow are paradigm-tokenized.
+  /// AppIcon glyph is CONTENT (§3.4). Radius + shadow + BACKING are chrome (T2).
   double get appIconRadius => _b.appIconRadius;
   List<BoxShadow> get appIconShadow => _b.appIconShadow;
+
+  /// Paradigm-tokenized backing derived from the icon's content colour (T2).
+  /// Cognitive desaturates it (T5).
+  SurfaceStyle appIconBacking(Color content) => Compose.appIconBacking(_b, content, _p);
 
   /// App-icon label is chrome (text over the wallpaper).
   Color get appIconLabelColor => _b.appIconLabelColor;
   Shadow? get appIconLabelShadow => _b.appIconLabelShadow;
 
-  /// Home wallpaper — chrome; changes across paradigms.
-  Gradient get homeWallpaper => _b.homeWallpaper;
+  /// Wallpaper — chrome; changes across paradigms (T1). Cognitive desaturates
+  /// it (T5). `homeWallpaper` kept as an alias for existing call sites.
+  Gradient get wallpaper => Compose.wallpaper(_b, _p);
+  Gradient get homeWallpaper => wallpaper;
 }
 
 class SliderTokens {

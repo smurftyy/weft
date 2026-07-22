@@ -1,6 +1,7 @@
 import 'package:flutter/painting.dart';
 import '../primitives.dart';
 import '../token_types.dart';
+import '../color_util.dart';
 import 'paradigm_bindings.dart';
 
 /// Skeuo binding — dimensional, natural mapping, warm ground.
@@ -82,6 +83,22 @@ class SkeuoBindings extends ParadigmBindings {
 
   @override
   List<BoxShadow> get appIconShadow => Prims.appIconShadowSkeuo;
+
+  @override
+  // Dimensional raised colored tile: top→bottom gradient off the content
+  // colour, inner top-highlight + inset bottom seat, subtle drop shadow. (T2)
+  SurfaceStyle appIconBacking(Color content) => SurfaceStyle(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Tone.lighten(content, 0.10), content, Tone.darken(content, 0.06)],
+          stops: const [0.0, 0.55, 1.0],
+        ),
+        borderColor: const Color(0x14000000),
+        borderWidth: 0.5,
+        shadows: Prims.appIconShadowSkeuo,
+        insets: const [InsetSpec.skeuoTopHighlight, InsetSpec.skeuoBottomSeat],
+      );
 
   @override
   Color get appIconLabelColor => const Color(0xFF2E2620); // warm dark ink

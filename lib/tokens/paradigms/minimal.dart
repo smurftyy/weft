@@ -62,17 +62,23 @@ class MinimalBindings extends ParadigmBindings {
   List<BoxShadow> get appIconShadow => Prims.appIconShadowMinimal; // none
 
   @override
+  // Flat colored tile: no shadow, no gradient. A hairline keeps white tiles
+  // legible on the near-white wallpaper (border is neither shadow nor gradient,
+  // so it stays within the flat-material contract). (T2)
+  SurfaceStyle appIconBacking(Color content) => SurfaceStyle(
+        color: content,
+        borderColor: const Color(0x14000000),
+        borderWidth: 1.0,
+      );
+
+  @override
   Color get appIconLabelColor => Prims.ink900;
 
   @override
   Shadow? get appIconLabelShadow => null; // flat: no text shadow
 
   @override
-  Gradient get homeWallpaper => const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xFFF5F4F0), Color(0xFFE8E6DF)],
-      );
+  Gradient get homeWallpaper => Prims.minimalWallpaper; // T1
 
   @override
   double get titleSize => Prims.textPage - 2; // minimal leans larger headers (26)

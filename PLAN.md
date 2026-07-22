@@ -1,6 +1,16 @@
 # PLAN.md — Mobile OS Launcher (INS 202 HCI)
 
-**Status:** Phase 7 (APK & polish) — IN PROGRESS (2026-07-21). Code review done (2 fixes applied); release APK building. 50/50 tests pass.
+**Status:** Phase 8 (polish, perceptibility, demo readiness) — IN PROGRESS (2026-07-22). Submission today.
+
+### Phase 8 log — IN PROGRESS (2026-07-22)
+Perceptibility + demo readiness. New semantic tokens logged as added (Q2 rule):
+
+- **T1 `surface.wallpaper.<paradigm>`** — exposed as `sem.system.wallpaper` (routed through `Compose.wallpaper`; `homeWallpaper` kept as alias). Glass wallpaper enriched to a saturated 4-stop diagonal (`Prims.glassWallpaper`: warm-magenta → deep-blue → violet → deep-blue) so `BackdropFilter` blur reveals varied regions; Skeuo warm gold unchanged; Minimal → `Prims.minimalWallpaper` (soft neutral). ✅
+- **T2 `component.appIcon.backing.<paradigm>`** — new `ParadigmBindings.appIconBacking(Color content)` → `sem.system.appIconBacking(fill)`. GLYPH stays content (brand identity invariant); BACKING is chrome derived from the icon colour: Skeuo dimensional raised gradient + top-highlight/bottom-seat insets + drop shadow; Glass translucent tint (.42) + 20px backdrop blur + white edge rim; Minimal flat tile + hairline. `AppIcon` refactored to paint via `SurfaceBox`. ✅
+- **T5 Cognitive delta** — Cognitive promoted from surface no-op to a real, composable desaturation delta (Motor/Vision shape), applied once in `compose.dart` at the chroma-bearing roles: `tileGround`, `sliderFill`, `cardGround` (`_mute`), `appIconBacking` + `wallpaper` (content desaturation), `sectionTitle` (emphasis blend toward caption). Amounts in `CognitiveProfile` (`desaturation .5`, `iconDesaturation .6`, `headerEmphasisBlend .4`). Propagates to Home + Control Center automatically (both read the semantic tier). `color_util.dart` (`Tone`) added for the HSL math. ✅
+- Tests: `test/phase8_token_test.dart` (8 cases) locks T2 per-paradigm backing + T5 composable desaturation. `flutter analyze` clean.
+
+### Phase 7 recap (2026-07-21) — Code review done (2 fixes applied); release APK building. 50/50 tests pass.
 
 ### Code review (2026-07-21) — 2 fixed, 1 optional
 - **F1 FIXED** — Control Center + Customization hardcoded a wallpaper gradient instead of the `system.homeWallpaper` token; now tokenized (consistent per-paradigm on Glass). Goldens regenerated.

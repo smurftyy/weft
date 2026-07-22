@@ -87,6 +87,17 @@ class GlassBindings extends ParadigmBindings {
   List<BoxShadow> get appIconShadow => Prims.appIconShadowGlass;
 
   @override
+  // Translucent colored tile: content tint at ~.42, BackdropFilter blur reveals
+  // the wallpaper behind, hairline white edge rim. Glyph stays content. (T2)
+  SurfaceStyle appIconBacking(Color content) => SurfaceStyle(
+        color: content.withValues(alpha: 0.42),
+        blurSigma: Prims.blurMd, // 20
+        borderColor: Prims.white.withValues(alpha: Prims.a55),
+        borderWidth: 1.0,
+        shadows: Prims.appIconShadowGlass,
+      );
+
+  @override
   Color get appIconLabelColor => Prims.white;
 
   @override
@@ -94,11 +105,7 @@ class GlassBindings extends ParadigmBindings {
       const Shadow(color: Color(0x59000000), offset: Offset(0, 1), blurRadius: 3);
 
   @override
-  Gradient get homeWallpaper => const LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: [Color(0xFF2A2350), Color(0xFF10323A), Color(0xFF52301F)],
-      );
+  Gradient get homeWallpaper => Prims.glassWallpaper; // T1: high-variance, saturated
 
   @override
   double get titleSize => Prims.textTitle;

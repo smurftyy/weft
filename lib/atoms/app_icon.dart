@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import '../tokens/semantic.dart';
+import 'surface_box.dart';
 
-/// AppIcon — CONTENT, not chrome (§3.4). Fill + glyph + label are constant
-/// across paradigms; ONLY corner radius and system shadow are paradigm-
-/// tokenized (via `sem.system`). Safari stays the blue compass everywhere.
+/// AppIcon — the GLYPH is content (§3.4): brand identity constant across
+/// paradigms (Safari stays the blue compass). The BACKING is chrome (T2): each
+/// paradigm renders its own material — dimensional raised tile / translucent
+/// glass revealing the wallpaper / flat tile — derived from the icon's content
+/// colour (`fill`), resolved through `sem.system.appIconBacking`.
 class AppIcon extends StatelessWidget {
-  final Color fill; // content — never paradigm-tokenized
+  final Color fill; // content colour the backing is derived from
   final Widget? glyph; // content (inline SVG-equivalent), passed as child
   final String label; // content
   final double size;
@@ -22,16 +25,12 @@ class AppIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     final sys = context.sem.system;
     final r = sys.appIconRadius * size / 60;
-    final icon = Container(
+    final icon = SurfaceBox(
+      style: sys.appIconBacking(fill),
+      radius: r,
       width: size,
       height: size,
       alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: fill,
-        borderRadius: BorderRadius.circular(r),
-        boxShadow: sys.appIconShadow.isEmpty ? null : sys.appIconShadow,
-      ),
-      clipBehavior: Clip.antiAlias,
       child: glyph,
     );
     if (label.trim().isEmpty) return icon;
