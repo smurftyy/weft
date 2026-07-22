@@ -45,17 +45,25 @@ class _CustomizationState extends State<Customization> {
 
   void _setParadigm(Paradigm p) => setState(() => _draft = _draft.copyWith(paradigm: p));
 
+  static const _densities = <(GridDensity, String, String)>[
+    (GridDensity.compact, 'Compact', '5×6'),
+    (GridDensity.standard, 'Default', '4×5'),
+    (GridDensity.spacious, 'Spacious', '3×5'),
+  ];
+
   void _setProfile(Profile p, bool on) {
     final next = Set<Profile>.of(_draft.profiles);
     on ? next.add(p) : next.remove(p);
     setState(() => _draft = _draft.copyWith(profiles: next));
   }
 
+  void _setDensity(GridDensity d) => setState(() => _draft = _draft.copyWith(density: d));
+
   @override
   Widget build(BuildContext context) {
     // Inject DRAFT semantics for this subtree so the surface previews the draft
     // independently of the committed (Home-behind) theme.
-    final draftSem = AppSemantics(paradigm: _draft.paradigm, profiles: _draft.profiles);
+    final draftSem = AppSemantics(paradigm: _draft.paradigm, profiles: _draft.profiles, density: _draft.density);
     return Theme(
       data: Theme.of(context).copyWith(extensions: <ThemeExtension>[draftSem]),
       child: Builder(builder: _buildContent),
@@ -116,6 +124,24 @@ class _CustomizationState extends State<Customization> {
                 ],
               ),
             ),
+          const SizedBox(height: 18),
+          Text('LAYOUT', style: _eyebrow(cap)),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              for (var i = 0; i < _densities.length; i++) ...[
+                if (i > 0) const SizedBox(width: 8),
+                Expanded(
+                  child: _DensitySegment(
+                    label: _densities[i].$2,
+                    sub: _densities[i].$3,
+                    selected: _draft.density == _densities[i].$1,
+                    onTap: () => _setDensity(_densities[i].$1),
+                  ),
+                ),
+              ],
+            ],
+          ),
           const SizedBox(height: 20),
           Text('LIVE PREVIEW', style: _eyebrow(cap)),
           const SizedBox(height: 10),
@@ -236,6 +262,39 @@ class _MaterialSpecimen extends StatelessWidget {
                 ],
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// One segment of the Layout density control (T10). Renders in the active
+/// paradigm's tile material (selected/enabled) so it composes with the paradigm
+/// like every other control.
+class _DensitySegment extends StatelessWidget {
+  final String label;
+  final String sub;
+  final bool selected;
+  final VoidCallback onTap;
+  const _DensitySegment({required this.label, required this.sub, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final tile = context.sem.tile;
+    final st = selected ? WState.selected : WState.enabled;
+    return GestureDetector(
+      onTap: onTap,
+      child: SurfaceBox(
+        style: tile.ground(st),
+        radius: tile.radius,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: tile.ink(st))),
+            Text(sub, style: TextStyle(fontSize: 11, color: tile.status(st))),
           ],
         ),
       ),

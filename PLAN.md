@@ -17,6 +17,15 @@ Perceptibility + demo readiness. New semantic tokens logged as added (Q2 rule):
 
 **P0 CHECKPOINT (mandatory) — PASSED (2026-07-22 ~05:04).** Release APK built (44MB), installed on emulator-5554 (API 34), demo narrative verified on-device: Skeuo baseline → Customization (3 distinct specimens + backdrops) → switch Glass (draft previews, staging holds Home) → Apply → **Home crossfades to Glass with wallpaper visible through translucent icon backings** → Cognitive toggle desaturates (preview + Home golden). SharedPreferences persistence confirmed (force-stop + relaunch restored Glass). **60/60 tests pass.**
 
+### Phase 8 — P1 (polish) COMPLETE (2026-07-22)
+- **T7 Skeuo Customization card** — new `customizationSurface()` / `customizationInset` / `customizationRadius` bindings; Skeuo floats content in a raised cream card (inset 12, radius 24, dimensional shadow + top-highlight inset), wallpaper becomes edge treatment; Glass/Minimal stay edge-to-edge. ✅
+- **T8 Live clock** — `LiveTime` (`StreamBuilder` on `Stream.periodic(1s)`) drives the Clock widget + status-bar time; weekday/month/H:MM formatted without `intl`. Test seam `LiveTime.debugFixedNow` freezes the clock in widget tests (deterministic goldens; no `pumpAndSettle` spin). Weather stays mock. ✅
+- **T9 Card parity** — verified Glass cards translucent-over-wallpaper (on-device) and Minimal cards flat (golden); no delta needed. ✅
+- **T10 Grid density** — `GridDensity {compact 5×6, standard 4×5, spacious 3×5}` + `GridSpec`; carried on `AppConfig` + `AppSemantics` (optional, non-breaking) → `sem.layout.grid` via `Compose.gridSpec` (composes with Motor, which bumps icon size over the density). Home grid + page indicator scale off it; app list extended to 30 to fill compact. "LAYOUT" segmented control in Customization (paradigm-material segments); persisted in `SharedPreferences`; included in the crossfade key. ✅
+- **T11 Apply crossfade** — done under T6 (keyed `AnimatedSwitcher`, 250ms, captured per-config Theme so it's a genuine cross-paradigm fade). ✅
+- **T12 Weft branding** — done. **T14 copy** — verified/updated. ✅
+- Tests: `phase8_token_test` gains T10 density cases; `home_golden_test`/`navigation_test` freeze the clock. **63/63 pass**, analyze clean.
+
 ### Phase 7 recap (2026-07-21) — Code review done (2 fixes applied); release APK building. 50/50 tests pass.
 
 ### Code review (2026-07-21) — 2 fixed, 1 optional

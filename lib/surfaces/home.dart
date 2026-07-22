@@ -35,6 +35,17 @@ const _apps = <_App>[
   _App(Color(0xFF0A84FF), Icons.apps, 'App Store'),
   _App(Color(0xFF1C1C1E), Icons.tv, 'TV'),
   _App(Color(0xFF1C1C1E), Icons.fitness_center, 'Fitness'),
+  // Extra apps so the compact (5×6) grid fills out (T10).
+  _App(Color(0xFFFF9F0A), Icons.checklist, 'Reminders'),
+  _App(Color(0xFF1C1C1E), Icons.show_chart, 'Stocks'),
+  _App(Color(0xFFFF3B30), Icons.article, 'News'),
+  _App(Color(0xFFFF9500), Icons.menu_book, 'Books'),
+  _App(Color(0xFF34C759), Icons.g_translate, 'Translate'),
+  _App(Color(0xFFFFCF2D), Icons.home_filled, 'Home'),
+  _App(Color(0xFF1C1C1E), Icons.mic, 'Voice Memos'),
+  _App(Color(0xFF8E8E93), Icons.person_outline, 'Contacts'),
+  _App(Color(0xFF5C5CE6), Icons.shortcut, 'Shortcuts'),
+  _App(Color(0xFF34C759), Icons.straighten, 'Measure'),
 ];
 
 const _dock = <_App>[
@@ -57,25 +68,35 @@ class Home extends StatelessWidget {
         glyph: Icon(a.glyph, color: a.glyphColor, size: size * 0.5),
       );
 
+  Widget _gridCell(List<_App> apps, int i, double size) {
+    if (i >= apps.length) return SizedBox(width: size);
+    final a = apps[i];
+    final isSettings = a.label == 'Settings';
+    return GestureDetector(
+      key: isSettings ? const ValueKey('home-settings') : null,
+      onTap: isSettings ? onOpenSettings : null,
+      child: _icon(a, size: size),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final sem = context.sem;
     final ink = sem.sectionHeader.titleColor;
     final cap = sem.sectionHeader.captionColor;
 
+    // T10: grid geometry follows the density token (× Motor tap-target bump).
+    final spec = sem.layout.grid;
+    final shown = _apps.take(spec.cols * spec.rows).toList();
     final grid = Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        for (var r = 0; r < 5; r++)
+        for (var r = 0; r < spec.rows; r++)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              for (var c = 0; c < 4; c++)
-                GestureDetector(
-                  key: _apps[r * 4 + c].label == 'Settings' ? const ValueKey('home-settings') : null,
-                  onTap: _apps[r * 4 + c].label == 'Settings' ? onOpenSettings : null,
-                  child: _icon(_apps[r * 4 + c]),
-                ),
+              for (var c = 0; c < spec.cols; c++)
+                _gridCell(shown, r * spec.cols + c, spec.iconSize),
             ],
           ),
       ],
@@ -135,7 +156,7 @@ class Home extends StatelessWidget {
                 const SizedBox(height: 16),
                 Expanded(child: grid),
                 const SizedBox(height: 8),
-                _PageIndicator(ink: ink),
+                _PageIndicator(ink: ink, scale: spec.indicatorScale),
                 const SizedBox(height: 10),
                 WidgetCard(
                   dock: true,
@@ -227,14 +248,18 @@ class _StatusBar extends StatelessWidget {
 
 class _PageIndicator extends StatelessWidget {
   final Color ink;
-  const _PageIndicator({required this.ink});
+  final double scale;
+  const _PageIndicator({required this.ink, this.scale = 1.0});
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(width: 7, height: 7, decoration: BoxDecoration(shape: BoxShape.circle, color: ink)),
-          const SizedBox(width: 8),
-          Container(width: 7, height: 7, decoration: BoxDecoration(shape: BoxShape.circle, color: ink.withValues(alpha: 0.32))),
-        ],
-      );
+  Widget build(BuildContext context) {
+    final d = 7 * scale;
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(width: d, height: d, decoration: BoxDecoration(shape: BoxShape.circle, color: ink)),
+        SizedBox(width: 8 * scale),
+        Container(width: d, height: d, decoration: BoxDecoration(shape: BoxShape.circle, color: ink.withValues(alpha: 0.32))),
+      ],
+    );
+  }
 }

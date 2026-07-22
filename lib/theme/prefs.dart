@@ -11,6 +11,7 @@ abstract final class Prefs {
 
   static const _kParadigm = 'weft.paradigm';
   static const _kProfiles = 'weft.profiles';
+  static const _kDensity = 'weft.density';
 
   static Future<AppConfig> load() async {
     try {
@@ -25,7 +26,12 @@ abstract final class Prefs {
         for (final p in Profile.values)
           if (profNames.contains(p.name)) p,
       };
-      return AppConfig(paradigm: paradigm, profiles: profiles);
+      final dName = sp.getString(_kDensity);
+      final density = GridDensity.values.firstWhere(
+        (d) => d.name == dName,
+        orElse: () => GridDensity.standard,
+      );
+      return AppConfig(paradigm: paradigm, profiles: profiles, density: density);
     } catch (_) {
       return const AppConfig(); // first run / plugin unavailable
     }
@@ -36,6 +42,7 @@ abstract final class Prefs {
       final sp = await SharedPreferences.getInstance();
       await sp.setString(_kParadigm, cfg.paradigm.name);
       await sp.setStringList(_kProfiles, [for (final p in cfg.profiles) p.name]);
+      await sp.setString(_kDensity, cfg.density.name);
     } catch (_) {/* best-effort */}
   }
 }

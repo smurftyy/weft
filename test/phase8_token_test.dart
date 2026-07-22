@@ -80,4 +80,29 @@ void main() {
       expect(s.system.appIconBacking(brand), isNotNull);
     });
   });
+
+  group('T10 — grid density is a layout token that composes with Motor', () {
+    AppSemantics semD(GridDensity d, [Set<Profile> p = const {}]) =>
+        AppSemantics(paradigm: Paradigm.skeuo, profiles: p, density: d);
+
+    test('density changes columns/rows', () {
+      expect((semD(GridDensity.compact).layout.grid.cols, semD(GridDensity.compact).layout.grid.rows), (5, 6));
+      expect((semD(GridDensity.standard).layout.grid.cols, semD(GridDensity.standard).layout.grid.rows), (4, 5));
+      expect((semD(GridDensity.spacious).layout.grid.cols, semD(GridDensity.spacious).layout.grid.rows), (3, 5));
+    });
+
+    test('spacious icons are larger than compact', () {
+      expect(semD(GridDensity.spacious).layout.grid.iconSize,
+          greaterThan(semD(GridDensity.compact).layout.grid.iconSize));
+    });
+
+    test('Motor bumps icon size over the chosen density (layers, not replaces)', () {
+      for (final d in GridDensity.values) {
+        expect(semD(d, {Profile.motor}).layout.grid.iconSize,
+            greaterThan(semD(d).layout.grid.iconSize));
+        // Columns are the density's — Motor doesn't change the grid shape.
+        expect(semD(d, {Profile.motor}).layout.grid.cols, semD(d).layout.grid.cols);
+      }
+    });
+  });
 }
