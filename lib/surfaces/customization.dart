@@ -7,15 +7,29 @@ import '../atoms/app_toggle.dart';
 import '../atoms/section_header.dart';
 import '../atoms/preview_card.dart';
 
-/// Customization — the thesis-carrying surface. Selecting a paradigm or toggling
-/// a profile mutates [AppConfig] live, so this surface AND (on re-entry) Control
-/// Center + Home all reflect it. The picker cards each render in their OWN
-/// paradigm via [ParadigmScope]; the live [PreviewCard] shows the composed
+/// Customization — the thesis-carrying surface. It edits a local DRAFT [AppConfig]
+/// (T6): picking a paradigm / toggling a profile mutates the draft and this
+/// surface previews it live, but Home + Control Center behind stay on the
+/// committed config until **Apply** commits the draft (and persists it). A back
+/// gesture discards the draft (revert). The picker cards each render in their OWN
+/// paradigm via [ParadigmScope]; the live [PreviewCard] shows the composed draft
 /// paradigm × profiles, demonstrating 3-axis stacking (e.g. Skeuo × Vision ×
 /// One-Handed).
-class Customization extends StatelessWidget {
-  final VoidCallback? onApply;
-  const Customization({super.key, this.onApply});
+class Customization extends StatefulWidget {
+  /// The committed config the draft is seeded from when this surface opens.
+  final AppConfig initialConfig;
+
+  /// Commits the edited draft (parent persists it + returns to Home).
+  final ValueChanged<AppConfig> onApply;
+
+  const Customization({super.key, required this.initialConfig, required this.onApply});
+
+  @override
+  State<Customization> createState() => _CustomizationState();
+}
+
+class _CustomizationState extends State<Customization> {
+  late AppConfig _draft = widget.initialConfig;
 
   static const _paradigms = <(Paradigm, String, String)>[
     (Paradigm.skeuo, 'Skeuo', 'Dimensional'),
@@ -25,21 +39,37 @@ class Customization extends StatelessWidget {
   static const _profiles = <(Profile, String, String)>[
     (Profile.motor, 'Motor', 'Larger targets, less motion'),
     (Profile.vision, 'Vision', 'Higher contrast, larger text'),
-    (Profile.cognitive, 'Cognitive', 'Simplified, muted (preview)'),
-    (Profile.oneHanded, 'One-Handed', 'Thumb-zone reach (preview)'),
+    (Profile.cognitive, 'Cognitive', 'Simplified, desaturated chrome'),
+    (Profile.oneHanded, 'One-Handed', 'Content clusters to thumb zone'),
   ];
+
+  void _setParadigm(Paradigm p) => setState(() => _draft = _draft.copyWith(paradigm: p));
+
+  void _setProfile(Profile p, bool on) {
+    final next = Set<Profile>.of(_draft.profiles);
+    on ? next.add(p) : next.remove(p);
+    setState(() => _draft = _draft.copyWith(profiles: next));
+  }
 
   @override
   Widget build(BuildContext context) {
-    final sem = context.sem;
-    final ctrl = ThemeScope.of(context);
-    final cfg = ctrl.value;
+    // Inject DRAFT semantics for this subtree so the surface previews the draft
+    // independently of the committed (Home-behind) theme.
+    final draftSem = AppSemantics(paradigm: _draft.paradigm, profiles: _draft.profiles);
+    return Theme(
+      data: Theme.of(context).copyWith(extensions: <ThemeExtension>[draftSem]),
+      child: Builder(builder: _buildContent),
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final sem = context.sem; // draft-composed
     final ink = sem.sectionHeader.titleColor;
     final cap = sem.sectionHeader.captionColor;
 
     return Stack(
       children: [
-        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.homeWallpaper))),
+        Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.wallpaper))),
         Positioned.fill(
           child: SurfaceBox(
             style: sem.container.style,
@@ -63,8 +93,8 @@ class Customization extends StatelessWidget {
                               paradigm: _paradigms[i].$1,
                               name: _paradigms[i].$2,
                               subtitle: _paradigms[i].$3,
-                              selected: cfg.paradigm == _paradigms[i].$1,
-                              onTap: () => ctrl.setParadigm(_paradigms[i].$1),
+                              selected: _draft.paradigm == _paradigms[i].$1,
+                              onTap: () => _setParadigm(_paradigms[i].$1),
                             ),
                           ),
                         ],
@@ -88,8 +118,8 @@ class Customization extends StatelessWidget {
                               ),
                             ),
                             GestureDetector(
-                              onTap: () => ctrl.setProfile(p.$1, !cfg.hasProfile(p.$1)),
-                              child: AppToggle(on: cfg.hasProfile(p.$1)),
+                              onTap: () => _setProfile(p.$1, !_draft.hasProfile(p.$1)),
+                              child: AppToggle(on: _draft.hasProfile(p.$1)),
                             ),
                           ],
                         ),
@@ -99,7 +129,7 @@ class Customization extends StatelessWidget {
                     const SizedBox(height: 10),
                     const PreviewCard(),
                     const SizedBox(height: 22),
-                    _ApplyCta(onApply: onApply),
+                    _ApplyCta(onApply: () => widget.onApply(_draft)),
                   ],
                 ),
               ),

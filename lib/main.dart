@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
 import 'theme/app_config.dart';
+import 'theme/prefs.dart';
 import 'surfaces/launcher_shell.dart';
 
-void main() => runApp(const LauncherApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Load the last-applied paradigm + profile (Skeuo baseline on first run). (T6)
+  final initial = await Prefs.load();
+  runApp(LauncherApp(initialConfig: initial));
+}
 
-/// Phase-1 entry point: mounts the token harness under [LauncherTheme]. From
-/// Phase 6 the home surface replaces the harness as the app root.
+/// Weft — the composable launcher. Home is the app root, wrapped in
+/// [LauncherTheme] so the whole tree reads the composed [AppSemantics].
 class LauncherApp extends StatefulWidget {
-  const LauncherApp({super.key});
+  final AppConfig initialConfig;
+  const LauncherApp({super.key, this.initialConfig = const AppConfig()});
 
   @override
   State<LauncherApp> createState() => _LauncherAppState();
 }
 
 class _LauncherAppState extends State<LauncherApp> {
-  final AppConfigController controller = AppConfigController();
+  late final AppConfigController controller = AppConfigController(widget.initialConfig);
 
   @override
   void dispose() {
@@ -25,7 +32,7 @@ class _LauncherAppState extends State<LauncherApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Mobile Launcher',
+      title: 'Weft',
       debugShowCheckedModeBanner: false,
       home: LauncherTheme(controller: controller, child: const LauncherShell()),
     );
