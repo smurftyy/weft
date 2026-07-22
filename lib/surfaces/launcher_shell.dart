@@ -60,7 +60,7 @@ class _LauncherShellState extends State<LauncherShell> with TickerProviderStateM
   /// every rebuild (T11).
   String _cfgKey(AppConfig c) {
     final profs = (c.profiles.map((p) => p.name).toList()..sort()).join(',');
-    return '${c.paradigm.name}|$profs';
+    return '${c.paradigm.name}|$profs|${c.density.name}';
   }
 
   /// Home wrapped in its OWN [Theme] carrying the committed config's semantics,
@@ -69,7 +69,7 @@ class _LauncherShellState extends State<LauncherShell> with TickerProviderStateM
   /// renders the new ones — a genuine cross-paradigm 250ms crossfade.
   Widget _homeSurface() {
     final cfg = _ctrl.value;
-    final sem = AppSemantics(paradigm: cfg.paradigm, profiles: cfg.profiles);
+    final sem = AppSemantics(paradigm: cfg.paradigm, profiles: cfg.profiles, density: cfg.density);
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 250),
       child: Theme(

@@ -67,74 +67,81 @@ class _CustomizationState extends State<Customization> {
     final ink = sem.sectionHeader.titleColor;
     final cap = sem.sectionHeader.captionColor;
 
+    final body = SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SectionHeader(title: 'Customize', caption: 'Aesthetic + accessibility, composed', page: true),
+          const SizedBox(height: 18),
+          Text('AESTHETIC', style: _eyebrow(cap)),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              for (var i = 0; i < _paradigms.length; i++) ...[
+                if (i > 0) const SizedBox(width: 10),
+                Expanded(
+                  child: _ParadigmCard(
+                    paradigm: _paradigms[i].$1,
+                    name: _paradigms[i].$2,
+                    subtitle: _paradigms[i].$3,
+                    selected: _draft.paradigm == _paradigms[i].$1,
+                    onTap: () => _setParadigm(_paradigms[i].$1),
+                  ),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 22),
+          Text('ACCESSIBILITY', style: _eyebrow(cap)),
+          const SizedBox(height: 6),
+          for (final p in _profiles)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 7),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(p.$2, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ink)),
+                        Text(p.$3, style: TextStyle(fontSize: 12, color: cap)),
+                      ],
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => _setProfile(p.$1, !_draft.hasProfile(p.$1)),
+                    child: AppToggle(on: _draft.hasProfile(p.$1)),
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 20),
+          Text('LIVE PREVIEW', style: _eyebrow(cap)),
+          const SizedBox(height: 10),
+          const PreviewCard(),
+          const SizedBox(height: 22),
+          _ApplyCta(onApply: () => widget.onApply(_draft)),
+        ],
+      ),
+    );
+
+    // T7: Skeuo floats the content in a raised cream card (inset > 0) with the
+    // wallpaper as an edge treatment; Glass/Minimal stay edge-to-edge (inset 0).
+    final inset = sem.system.customizationInset;
+    final container = SurfaceBox(
+      style: sem.system.customizationSurface,
+      radius: sem.system.customizationRadius,
+      child: inset == EdgeInsets.zero ? SafeArea(child: body) : body,
+    );
+
     return Stack(
       children: [
         Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: sem.system.wallpaper))),
         Positioned.fill(
-          child: SurfaceBox(
-            style: sem.container.style,
-            radius: 0,
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SectionHeader(title: 'Customize', caption: 'Aesthetic + accessibility, composed', page: true),
-                    const SizedBox(height: 18),
-                    Text('AESTHETIC', style: _eyebrow(cap)),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        for (var i = 0; i < _paradigms.length; i++) ...[
-                          if (i > 0) const SizedBox(width: 10),
-                          Expanded(
-                            child: _ParadigmCard(
-                              paradigm: _paradigms[i].$1,
-                              name: _paradigms[i].$2,
-                              subtitle: _paradigms[i].$3,
-                              selected: _draft.paradigm == _paradigms[i].$1,
-                              onTap: () => _setParadigm(_paradigms[i].$1),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const SizedBox(height: 22),
-                    Text('ACCESSIBILITY', style: _eyebrow(cap)),
-                    const SizedBox(height: 6),
-                    for (final p in _profiles)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 7),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(p.$2, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: ink)),
-                                  Text(p.$3, style: TextStyle(fontSize: 12, color: cap)),
-                                ],
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () => _setProfile(p.$1, !_draft.hasProfile(p.$1)),
-                              child: AppToggle(on: _draft.hasProfile(p.$1)),
-                            ),
-                          ],
-                        ),
-                      ),
-                    const SizedBox(height: 20),
-                    Text('LIVE PREVIEW', style: _eyebrow(cap)),
-                    const SizedBox(height: 10),
-                    const PreviewCard(),
-                    const SizedBox(height: 22),
-                    _ApplyCta(onApply: () => widget.onApply(_draft)),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          child: inset == EdgeInsets.zero
+              ? container
+              : SafeArea(child: Padding(padding: inset, child: container)),
         ),
       ],
     );

@@ -181,4 +181,17 @@ class Compose {
 
   static SurfaceStyle cardGround(ParadigmBindings b, Set<Profile> p) =>
       _mute(_floorBlur(b.cardGround(), b.id, p), p); // Cognitive mutes card chroma (T5)
+
+  // ── Home-grid density (T10) — composes with Motor (bigger tap targets). ──
+  static GridSpec gridSpec(GridDensity d, Set<Profile> p) {
+    final motor = _motor(p);
+    switch (d) {
+      case GridDensity.compact:
+        return GridSpec(cols: 5, rows: 6, iconSize: motor ? 52 : 44, spacing: 8, indicatorScale: 0.85);
+      case GridDensity.standard:
+        return GridSpec(cols: 4, rows: 5, iconSize: motor ? 64 : 56, spacing: 12, indicatorScale: 1.0);
+      case GridDensity.spacious:
+        return GridSpec(cols: 3, rows: 5, iconSize: motor ? 74 : 66, spacing: 16, indicatorScale: 1.15);
+    }
+  }
 }

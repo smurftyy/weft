@@ -10,8 +10,29 @@ export 'primitives.dart' show InsetSpec;
 enum Paradigm { skeuo, glass, minimal }
 
 /// The four accessibility profiles. Motor + Vision are first-class across all
-/// surfaces; Cognitive + One-Handed are Customization-preview-only (Q3).
+/// surfaces; Cognitive is a surface delta (T5); One-Handed is a layout delta.
 enum Profile { motor, vision, cognitive, oneHanded }
+
+/// Home-grid density (T10) — a user layout preference, composed with Motor
+/// (which bumps the resolved icon size over the chosen density).
+enum GridDensity { compact, standard, spacious }
+
+/// Resolved home-grid geometry for a [GridDensity] (× Motor). Icon size,
+/// spacing and page-indicator scale all move together.
+class GridSpec {
+  final int cols;
+  final int rows;
+  final double iconSize;
+  final double spacing;
+  final double indicatorScale;
+  const GridSpec({
+    required this.cols,
+    required this.rows,
+    required this.iconSize,
+    required this.spacing,
+    required this.indicatorScale,
+  });
+}
 
 /// The standard interaction-state axis every interactive atom shares.
 /// Widget-specific extra axes (slider value, toggle on/off) are passed as a

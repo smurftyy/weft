@@ -8,11 +8,13 @@ import '../tokens/semantic.dart';
 class AppConfig {
   final Paradigm paradigm;
   final Set<Profile> profiles;
+  final GridDensity density;
   final Map<String, bool> toggles;
 
   const AppConfig({
     this.paradigm = Paradigm.skeuo,
     this.profiles = const {},
+    this.density = GridDensity.standard,
     this.toggles = const {},
   });
 
@@ -21,11 +23,13 @@ class AppConfig {
   AppConfig copyWith({
     Paradigm? paradigm,
     Set<Profile>? profiles,
+    GridDensity? density,
     Map<String, bool>? toggles,
   }) {
     return AppConfig(
       paradigm: paradigm ?? this.paradigm,
       profiles: profiles ?? this.profiles,
+      density: density ?? this.density,
       toggles: toggles ?? this.toggles,
     );
   }
@@ -44,6 +48,8 @@ class AppConfigController extends ValueNotifier<AppConfig> {
   }
 
   void toggleProfile(Profile p) => setProfile(p, !value.profiles.contains(p));
+
+  void setDensity(GridDensity d) => value = value.copyWith(density: d);
 
   void setToggle(String key, bool on) =>
       value = value.copyWith(toggles: {...value.toggles, key: on});
@@ -85,7 +91,7 @@ class LauncherTheme extends StatelessWidget {
         animation: controller,
         builder: (context, _) {
           final cfg = controller.value;
-          final sem = AppSemantics(paradigm: cfg.paradigm, profiles: cfg.profiles);
+          final sem = AppSemantics(paradigm: cfg.paradigm, profiles: cfg.profiles, density: cfg.density);
           final base = ThemeData(useMaterial3: true, brightness: Brightness.light);
           return Theme(
             data: base.copyWith(extensions: <ThemeExtension>[sem]),

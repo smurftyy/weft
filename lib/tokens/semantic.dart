@@ -24,10 +24,14 @@ export 'token_types.dart';
 class AppSemantics extends ThemeExtension<AppSemantics> {
   final Paradigm paradigm;
   final Set<Profile> profiles;
+  final GridDensity density;
   final ParadigmBindings _b;
 
-  AppSemantics({required this.paradigm, Set<Profile> profiles = const {}})
-      : profiles = Set.unmodifiable(profiles),
+  AppSemantics({
+    required this.paradigm,
+    Set<Profile> profiles = const {},
+    this.density = GridDensity.standard,
+  })  : profiles = Set.unmodifiable(profiles),
         _b = bindingsFor(paradigm);
 
   static ParadigmBindings bindingsFor(Paradigm p) => switch (p) {
@@ -48,12 +52,14 @@ class AppSemantics extends ThemeExtension<AppSemantics> {
   ChipTokens get chip => ChipTokens(_b, profiles);
   CardTokens get card => CardTokens(_b, profiles);
   PreviewTokens get preview => PreviewTokens(_b, profiles);
+  LayoutTokens get layout => LayoutTokens(density, profiles);
 
   @override
-  AppSemantics copyWith({Paradigm? paradigm, Set<Profile>? profiles}) =>
+  AppSemantics copyWith({Paradigm? paradigm, Set<Profile>? profiles, GridDensity? density}) =>
       AppSemantics(
         paradigm: paradigm ?? this.paradigm,
         profiles: profiles ?? this.profiles,
+        density: density ?? this.density,
       );
 
   /// Paradigm/profile swaps are instant, not cross-faded (Q3: skip theme_tailor
@@ -66,11 +72,12 @@ class AppSemantics extends ThemeExtension<AppSemantics> {
   bool operator ==(Object other) =>
       other is AppSemantics &&
       other.paradigm == paradigm &&
+      other.density == density &&
       other.profiles.length == profiles.length &&
       other.profiles.containsAll(profiles);
 
   @override
-  int get hashCode => Object.hash(paradigm, Object.hashAllUnordered(profiles));
+  int get hashCode => Object.hash(paradigm, density, Object.hashAllUnordered(profiles));
 }
 
 /// Convenience accessor: `context.sem.tile.ground(WState.selected)`.
@@ -212,6 +219,15 @@ class CardTokens {
 
   SurfaceStyle get ground => Compose.cardGround(_b, _p);
   Color get titleColor => _b.cardTitleColor();
+}
+
+class LayoutTokens {
+  final GridDensity _d;
+  final Set<Profile> _p;
+  const LayoutTokens(this._d, this._p);
+
+  /// Home-grid geometry for the chosen density × Motor (T10).
+  GridSpec get grid => Compose.gridSpec(_d, _p);
 }
 
 class PreviewTokens {
