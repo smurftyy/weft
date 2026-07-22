@@ -99,15 +99,17 @@ class Home extends StatelessWidget {
                         flex: 142,
                         child: WidgetCard(
                           title: 'Clock',
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text('Friday', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFFB24C34))),
-                              FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text('9:41', style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700, height: 1, color: ink))),
-                              Text('July 21', style: TextStyle(fontSize: 13, color: cap)),
-                            ],
+                          child: LiveTime(
+                            builder: (context, now) => Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_weekday(now), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFFB24C34))),
+                                FittedBox(fit: BoxFit.scaleDown, alignment: Alignment.centerLeft, child: Text(_hourMinute(now), style: TextStyle(fontSize: 46, fontWeight: FontWeight.w700, height: 1, color: ink))),
+                                Text(_monthDay(now), style: TextStyle(fontSize: 13, color: cap)),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -151,6 +153,56 @@ class Home extends StatelessWidget {
   }
 }
 
+// ── Live clock (T8) ──────────────────────────────────────────────────────────
+const _weekdays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const _months = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+    'August', 'September', 'October', 'November', 'December'];
+
+String _weekday(DateTime t) => _weekdays[t.weekday - 1];
+String _monthDay(DateTime t) => '${_months[t.month - 1]} ${t.day}';
+String _hourMinute(DateTime t) {
+  final h = t.hour % 12 == 0 ? 12 : t.hour % 12;
+  return '$h:${t.minute.toString().padLeft(2, '0')}';
+}
+
+/// Ticks once a second via `StreamBuilder` on `Stream.periodic` (T8) so the
+/// clock is alive — no more "screenshot in phone chrome". Weather stays mock.
+class LiveTime extends StatefulWidget {
+  final Widget Function(BuildContext, DateTime) builder;
+  const LiveTime({super.key, required this.builder});
+
+  /// Test seam: when set, LiveTime renders this fixed time statically (no
+  /// periodic stream), so widget tests stay deterministic and `pumpAndSettle`
+  /// doesn't spin on the 1-second timer. Null in production → live ticking.
+  static DateTime? debugFixedNow;
+
+  @override
+  State<LiveTime> createState() => _LiveTimeState();
+}
+
+class _LiveTimeState extends State<LiveTime> {
+  Stream<DateTime>? _stream;
+
+  @override
+  void initState() {
+    super.initState();
+    if (LiveTime.debugFixedNow == null) {
+      _stream = Stream.periodic(const Duration(seconds: 1), (_) => DateTime.now());
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fixed = LiveTime.debugFixedNow;
+    if (fixed != null) return widget.builder(context, fixed);
+    return StreamBuilder<DateTime>(
+      stream: _stream,
+      initialData: DateTime.now(),
+      builder: (context, snap) => widget.builder(context, snap.data!),
+    );
+  }
+}
+
 class _StatusBar extends StatelessWidget {
   final Color ink;
   const _StatusBar({required this.ink});
@@ -160,7 +212,7 @@ class _StatusBar extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('9:41', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink)),
+            LiveTime(builder: (context, now) => Text(_hourMinute(now), style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: ink))),
             Row(children: [
               Icon(Icons.wifi, size: 17, color: ink),
               const SizedBox(width: 6),

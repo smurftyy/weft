@@ -13,7 +13,14 @@ void main() {
       debugShowCheckedModeBanner: false,
       home: LauncherTheme(
         controller: controller,
-        child: const SizedBox(width: 393, height: 852, child: Customization()),
+        child: SizedBox(
+          width: 393,
+          height: 852,
+          child: Customization(
+            initialConfig: AppConfig(paradigm: p, profiles: profiles),
+            onApply: (_) {},
+          ),
+        ),
       ),
     );
   }
